@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Happy 23rd Birthday, Bhavya!</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r134/three.min.js"></script>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        body, html { margin: 0; padding: 0; overflow: hidden; height: 100%; }
+        #canvas { position: absolute; top: 0; left: 0; width: 100%; height: 100%; z-index: -1; }
+        .content { position: relative; z-index: 10; text-align: center; color: white; padding: 2rem; }
+        .heart { animation: pulse 2s ease-in-out infinite; }
+        @keyframes pulse {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.1); }
+            100% { transform: scale(1); }
+        }
+        .fade-in { animation: fadeIn 2s ease-in; }
+        @keyframes fadeIn {
+            0% { opacity: 0; transform: translateY(20px); }
+            100% { opacity: 1; transform: translateY(0); }
+        }
+    </style>
+</head>
+<body class="bg-gradient-to-b from-pink-200 to-purple-300">
+    <canvas id="canvas"></canvas>
+    <div class="content flex flex-col items-center justify-center h-screen">
+        <h1 class="text-5xl md:text-7xl font-bold text-pink-600 heart fade-in">Happy 23rd Birthday, Bhavya!</h1>
+        <p class="text-xl md:text-2xl mt-4 text-gray-800 fade-in" style="animation-delay: 0.5s;">
+            My dearest Bhavya, you light up my world like no one else. 
+            Here's to celebrating you today and always. I love you! 💖
+        </p>
+        <p class="text-lg mt-2 text-gray-700 fade-in" style="animation-delay: 1s;">
+            May your 23rd year be filled with love, laughter, and endless joy!
+        </p>
+        <button class="mt-6 px-6 py-3 bg-pink-500 text-white rounded-full hover:bg-pink-600 transition duration-300 fade-in" style="animation-delay: 1.5s;" onclick="playMusic()">
+            Play "Tere Bina Na Guzara Hai"
+        </button>
+    </div>
+    <audio id="backgroundMusic" src="song.mp3" loop></audio>
+    <script>
+        // Three.js setup for 3D heart and particles
+        const scene = new THREE.Scene();
+        const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
+        const renderer = new THREE.WebGLRenderer({ canvas: document.getElementById('canvas'), alpha: true });
+        renderer.setSize(window.innerWidth, window.innerHeight);
+
+        // Create a 3D heart shape
+        const heartShape = new THREE.Shape();
+        heartShape.moveTo(0, 0);
+        heartShape.bezierCurveTo(0, -0.3, -0.5, -0.5, -0.5, 0);
+        heartShape.bezierCurveTo(-0.5, 0.5, 0, 0.7, 0, 1);
+        heartShape.bezierCurveTo(0, 0.7, 0.5, 0.5, 0.5, 0);
+        heartShape.bezierCurveTo(0.5, -0.5, 0, -0.3, 0, 0);
+
+        const extrudeSettings = { depth: 0.2, bevelEnabled: true, bevelSegments: 2, steps: 2, bevelSize: 0.1, bevelThickness: 0.1 };
+        const geometry = new THREE.ExtrudeGeometry(heartShape, extrudeSettings);
+        const material = new THREE.MeshBasicMaterial({ color: 0xff69b4, transparent: true, opacity: 0.8 });
+        const heart = new THREE.Mesh(geometry, material);
+        scene.add(heart);
+
+        // Particle system for dreamy effect
+        const particleCount = 200;
+        const particles = new THREE.BufferGeometry();
+        const positions = new Float32Array(particleCount * 3);
+        for (let i = 0; i < particleCount * 3; i += 3) {
+            positions[i] = (Math.random() - 0.5) * 10;
+            positions[i + 1] = (Math.random() - 0.5) * 10;
+            positions[i + 2] = (Math.random() - 0.5) * 10;
+        }
+        particles.setAttribute('position', new THREE.BufferAttribute(positions, 3));
+        const particleMaterial = new THREE.PointsMaterial({ color: 0xffffff, size: 0.05, transparent: true, opacity: 0.6 });
+        const particleSystem = new THREE.Points(particles, particleMaterial);
+        scene.add(particleSystem);
+
+        camera.position.z = 2;
+
+        // Animation loop
+        function animate() {
+            requestAnimationFrame(animate);
+            heart.rotation.y += 0.01;
+            heart.rotation.x += 0.005;
+            particleSystem.rotation.y += 0.002;
+            renderer.render(scene, camera);
+        }
+        animate();
+
+        // Handle window resize
+        window.addEventListener('resize', () => {
+            camera.aspect = window.innerWidth / window.innerHeight;
+            camera.updateProjectionMatrix();
+            renderer.setSize(window.innerWidth, window.innerHeight);
+        });
+
+        // Play music function
+        function playMusic() {
+            const music = document.getElementById('backgroundMusic');
+            music.play().catch(e => console.log("Audio play failed:", e));
+        }
+    </script>
+</body>
+</html>
